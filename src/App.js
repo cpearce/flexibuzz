@@ -14,7 +14,8 @@ class LoginBox extends Component {
   constructor(props) {
     super(props);
     this.state = {username: '', password: ''};
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleLogin = this.handleLogin.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
   }
 
@@ -24,7 +25,12 @@ class LoginBox extends Component {
     });
   }
 
-  handleSubmit(event) {
+  handleLogout(event) {
+    event.preventDefault();
+    this.props.logout();
+  }
+
+  handleLogin(event) {
     event.preventDefault();
     const username = this.state.username;
     const password = this.state.password;
@@ -39,13 +45,13 @@ class LoginBox extends Component {
   render() {
     if (this.props.authToken) {
       return (
-        <form className="LoginBox" onSubmit={this.handleSubmit}>
+        <form className="LoginBox" onSubmit={this.handleLogout}>
           <input type="submit" value="Logout" />
         </form>
       );
     }
     return (
-      <form className="LoginBox" onSubmit={this.handleSubmit}>
+      <form className="LoginBox" onSubmit={this.handleLogin}>
         <label>
           Flexibuzz username:
           <input
@@ -76,6 +82,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.authTokenChange = this.authTokenChange.bind(this);
+    this.logout = this.logout.bind(this);
     let token = localStorage.getItem("apiToken");
     this.state = {authToken: token ? token : '' };
   }
@@ -83,6 +90,11 @@ class App extends Component {
   authTokenChange(token) {
     localStorage.setItem("apiToken", token);
     this.setState({authToken: this.props.tiqbiz.apiToken});
+  }
+
+  logout() {
+    localStorage.removeItem("apiToken");
+    this.setState({authToken: "" });
   }
 
   render() {
@@ -93,6 +105,7 @@ class App extends Component {
           tiqbiz={this.props.tiqbiz}
           authToken={this.state.authToken}
           authTokenChange={this.authTokenChange}
+          logout={this.logout}
         />
       </div>
     );
