@@ -94,7 +94,7 @@ class Calendar extends Component {
   render() {
     if (!this.props.authenticated) {
       return (
-        <p>calendar</p>
+        <div />
       );
     }
     if (this.props.events == null) {
@@ -107,6 +107,7 @@ class Calendar extends Component {
           <td>{e.title}</td>
           <td>{this.extractDate(e)}</td>
           <td>{e.boxes.join(", ")}</td>
+          <td>{e.notifications.join(", ")}</td>
         </tr>
         );
       }
@@ -115,7 +116,10 @@ class Calendar extends Component {
       <table id="calendar">
         <thead>
           <tr>
-            <td>Title</td><td>Date</td><td>Boxes</td>
+            <td>Title</td>
+            <td>Date</td>
+            <td>Boxes</td>
+            <td>Notifications</td>
           </tr>
         </thead>
         <tbody>

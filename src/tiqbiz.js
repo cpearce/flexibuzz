@@ -85,6 +85,7 @@ class TiqBizAPI {
             endTime: timeOf(post.start_date),
             allDay: post.all_day,
             boxes: extractBoxes(post.boxes),
+            notifications: post.notifications,
           });
         }
       }
