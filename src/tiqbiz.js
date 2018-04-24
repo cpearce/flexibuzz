@@ -1,5 +1,3 @@
-"use strict";
-
 const API_URL = "https://api.tiqbiz.com/v6/";
 
 class TiqBizAPI {
