@@ -26,3 +26,17 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+#calendar {
+  border: solid black 1px;
+  margin: 5px;
+  padding: 5px;
+}
+
+#calendar thead td {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+tr:nth-child(even) {background: #CCC}
+tr:nth-child(odd) {background: #FFF}

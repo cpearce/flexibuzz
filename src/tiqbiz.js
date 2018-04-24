@@ -77,6 +77,7 @@ class TiqBizAPI {
       for (var r of responses) {
         for (var post of r.data) {
           posts.push({
+            id: post.id,
             title: post.title,
             startDate: dateOf(post.start_date),
             startTime: timeOf(post.start_date),
