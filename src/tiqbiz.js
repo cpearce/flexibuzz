@@ -43,13 +43,13 @@ class TiqBizAPI {
       };
 
       let response = await self.getData("businesses/" + self.business.id + "/posts", {
-        post_type: "calendar", orderBy: "start_date|desc", page: 1, limit: 15,
+        post_type: "calendar", orderBy: "start_date|asc", page: 1, limit: 15,
       });
 
       let responses = [response];
       for (var page = 2; page <= response.meta.pagination.total_pages; page++) {
         responses.push(await self.getData("businesses/" + self.business.id + "/posts", {
-          post_type: "calendar", orderBy: "start_date|desc", page: page, limit: 15,
+          post_type: "calendar", orderBy: "start_date|asc", page: page, limit: 15,
         }));
       }
 
