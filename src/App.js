@@ -82,13 +82,10 @@ class App extends Component {
     }
   }
 
-  authenticate(token) {
-    this.props.tiqbiz.authenticate(token).then(
-      () => {
-        localStorage.setItem("apiToken", token);
-        this.setState({authenticated: true});
-      }
-    );
+  async authenticate(token) {
+    await this.props.tiqbiz.authenticate(token);
+    localStorage.setItem("apiToken", token);
+    this.setState({authenticated: true});
   }
 
   async logout() {
