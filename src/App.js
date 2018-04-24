@@ -32,18 +32,11 @@ class LoginBox extends Component {
 
   handleLogin(event) {
     event.preventDefault();
-    const username = this.state.username;
-    const password = this.state.password;
-    this.props.tiqbiz.login(username, password)
-    .then(
-      () => {
-        this.props.authTokenChange();
-      }
-    );
+    this.props.login(this.state.username, this.state.password);
   }
 
   render() {
-    if (this.props.authToken) {
+    if (this.props.authenticated) {
       return (
         <form className="LoginBox" onSubmit={this.handleLogout}>
           <input type="submit" value="Logout" />
@@ -81,20 +74,33 @@ class LoginBox extends Component {
 class App extends Component {
   constructor(props) {
     super(props);
-    this.authTokenChange = this.authTokenChange.bind(this);
     this.logout = this.logout.bind(this);
+    this.login = this.login.bind(this);
+    this.state = { authenticated: false };
     let token = localStorage.getItem("apiToken");
-    this.state = {authToken: token ? token : '' };
+    if (token) {
+      this.authenticate(token);
+    }
   }
 
-  authTokenChange(token) {
-    localStorage.setItem("apiToken", token);
-    this.setState({authToken: this.props.tiqbiz.apiToken});
+  authenticate(token) {
+    this.props.tiqbiz.authenticate(token).then(
+      () => {
+        localStorage.setItem("apiToken", token);
+        this.setState({authenticated: true});
+      }
+    );
   }
 
-  logout() {
+  async logout() {
+    await this.props.tiqbiz.logout();
     localStorage.removeItem("apiToken");
-    this.setState({authToken: "" });
+    this.setState({authenticated: false});
+  }
+
+  async login(username, password) {
+    let token = await this.props.tiqbiz.login(username, password);
+    await this.authenticate(token);
   }
 
   render() {
@@ -102,10 +108,9 @@ class App extends Component {
       <div className="App">
         <HeaderBox />
         <LoginBox
-          tiqbiz={this.props.tiqbiz}
-          authToken={this.state.authToken}
-          authTokenChange={this.authTokenChange}
+          login={this.login}
           logout={this.logout}
+          authenticated={this.state.authenticated}
         />
       </div>
     );

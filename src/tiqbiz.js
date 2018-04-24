@@ -4,23 +4,28 @@ const API_URL = "https://api.tiqbiz.com/v6/";
 
 class TiqBizAPI {
 
-  login(username, password) {
+  async login(username, password) {
     this.username = username;
     this.password = password;
-    return new Promise(async (resolve, reject) => {
-      this.postData("users/login", {
-        email: this.username,
-        password: this.password,
-      })
-      .then((json) => this.authenticate(json.token))
-      .then(resolve, reject);
+    let json = await this.postData("users/login", {
+      email: this.username,
+      password: this.password,
     });
+    return json.token;
+  }
+
+  async logout() {
+    if (!this.apiToken) {
+      return;
+    }
+    await this.getData("users/logout", {});
+    this.apiToken = undefined;
+    this.business = undefined;
   }
 
   async authenticate(token) {
     this.apiToken = token;
     let response = await this.getData("users/auth", {});
-    console.log(response);
     this.business = response.admin_of[0];
   }
 
