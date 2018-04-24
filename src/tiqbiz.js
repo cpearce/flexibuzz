@@ -27,71 +27,67 @@ class TiqBizAPI {
     this.business = response.admin_of[0];
   }
 
-  calendar() {
+  async calendar(sink) {
     if (!this.apiToken || !this.business) {
       return Promise.reject("Not logged in");
     }
 
-    let self = this;
-    return new Promise(async function(resolve, reject) {
-      let extractBoxes = (boxes) => {
-        let b = [];
-        for (var box of boxes) {
-          b.push(box.name);
-        }
-        return b;
-      };
-
-      let response = await self.getData("businesses/" + self.business.id + "/posts", {
-        post_type: "calendar", orderBy: "start_date|asc", page: 1, limit: 15,
-      });
-
-      let responses = [response];
-      for (var page = 2; page <= response.meta.pagination.total_pages; page++) {
-        responses.push(await self.getData("businesses/" + self.business.id + "/posts", {
-          post_type: "calendar", orderBy: "start_date|asc", page: page, limit: 15,
-        }));
+    let extractBoxes = (boxes) => {
+      let b = [];
+      for (var box of boxes) {
+        b.push(box.name);
       }
+      return b;
+    };
 
-      let timeOf = (s) => {
-        let r = /(\d\d:\d\d):\d\d/;
-        let m = s.match(r);
-        if (m.length < 2) {
-          // log("Failed to extract time from '" + s + "'");
-          return s;
-        }
-        return m[1];
-      };
-
-      let dateOf = (s) => {
-        let r = /(\d\d\d\d-\d\d-\d\d)/;
-        let m = s.match(r);
-        if (m == null || m.length < 2) {
-          // log("Failed to extract date from '" + s + "'");
-          return s;
-        }
-        return m[0];
-      };
-
-      var posts = [];
-      for (var r of responses) {
-        for (var post of r.data) {
-          posts.push({
-            id: post.id,
-            title: post.title,
-            startDate: dateOf(post.start_date),
-            startTime: timeOf(post.start_date),
-            endDate: dateOf(post.end_date),
-            endTime: timeOf(post.start_date),
-            allDay: post.all_day,
-            boxes: extractBoxes(post.boxes),
-            notifications: post.notifications,
-          });
-        }
+    let timeOf = (s) => {
+      let r = /(\d\d:\d\d):\d\d/;
+      let m = s.match(r);
+      if (m.length < 2) {
+        return s;
       }
+      return m[1];
+    };
 
-      resolve(posts);
+    let dateOf = (s) => {
+      let r = /(\d\d\d\d-\d\d-\d\d)/;
+      let m = s.match(r);
+      if (m == null || m.length < 2) {
+        return s;
+      }
+      return m[0];
+    };
+
+    let returnEntries = (sink, posts) => {
+      var entries = [];
+      for (var post of posts) {
+        entries.push({
+          id: post.id,
+          title: post.title,
+          startDate: dateOf(post.start_date),
+          startTime: timeOf(post.start_date),
+          endDate: dateOf(post.end_date),
+          endTime: timeOf(post.start_date),
+          allDay: post.all_day,
+          boxes: extractBoxes(post.boxes),
+          notifications: post.notifications,
+        });
+      }
+      sink(entries);
+    };
+
+    const bid = this.business.id;
+    let response = await this.getData("businesses/" + bid + "/posts", {
+      post_type: "calendar", orderBy: "start_date|asc", page: 1, limit: 15,
     });
+    returnEntries(sink, response.data);
+
+    for (var page = 2; page <= response.meta.pagination.total_pages; page++) {
+      response = await this.getData("businesses/" + bid + "/posts", {
+        post_type: "calendar", orderBy: "start_date|asc", page: page, limit: 15,
+      });
+      returnEntries(sink, response.data);
+    }
   }
 
   boxes() {

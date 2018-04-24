@@ -146,8 +146,16 @@ class App extends Component {
     await this.props.tiqbiz.authenticate(token);
     localStorage.setItem("apiToken", token);
     this.setState({authenticated: true});
-    let calendar = await this.props.tiqbiz.calendar();
-    this.setState({calendar: calendar });
+
+    let self = this;
+    let appendToCalendar = (entries) => {
+      self.setState((prev) => {
+        let calendar = prev.calendar == null ? entries
+          : prev.calendar.concat(entries);
+        return {calendar: calendar }
+      });
+    };
+    await this.props.tiqbiz.calendar(appendToCalendar);
   }
 
   async logout() {
