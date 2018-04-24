@@ -76,10 +76,12 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.authTokenChange = this.authTokenChange.bind(this);
-    this.state = {authToken: '' };
+    let token = localStorage.getItem("apiToken");
+    this.state = {authToken: token ? token : '' };
   }
 
   authTokenChange(token) {
+    localStorage.setItem("apiToken", token);
     this.setState({authToken: this.props.tiqbiz.apiToken});
   }
 
