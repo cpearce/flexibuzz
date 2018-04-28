@@ -59,10 +59,11 @@ class App extends Component {
           logout={this.logout}
           authenticated={this.state.authenticated}
         />
-        <Calendar
-          authenticated={this.state.authenticated}
-          events={this.state.calendar}
-        />
+        {this.state.authenticated &&
+          <Calendar
+            events={this.state.calendar}
+          />
+        }
       </div>
     );
   }

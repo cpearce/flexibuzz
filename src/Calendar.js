@@ -22,11 +22,6 @@ class Calendar extends Component {
   }
 
   render() {
-    if (!this.props.authenticated) {
-      return (
-        <div />
-      );
-    }
     if (this.props.events == null) {
       return <p>Loading calendar...</p>
     }
