@@ -1,10 +1,38 @@
 import React, { Component } from 'react';
 
+function fw(n) {
+  if (n < 10) {
+    return "0" + n;
+  }
+  return "" + n;
+}
+
+const dayOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+const month = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+];
+
+function prettyDate(d) {
+  return dayOfWeek[d.getDay()] + " " + d.getDate() + " " + month[d.getMonth()] + " " +
+    d.getFullYear() + " " + fw(d.getHours() + ":" + fw(d.getMinutes()));
+}
+
+function prettyShortDate(d) {
+  if (d === "") {
+    return "";
+  }
+  d = new Date(d);
+  return dayOfWeek[d.getDay()] + " " + d.getDate() + " " + month[d.getMonth()] + " " +
+    d.getFullYear();
+}
+
 class Calendar extends Component {
   extractDate(e) {
-    let startDate = e.startDate;
+    let startDate = prettyShortDate(e.startDate);
     let startTime = e.allDay ? "(all day)" : e.startTime;
-    let endDate = e.startDate === e.endDate ? "" : e.endDate;
+    let endDate = e.startDate === e.endDate ? "" : prettyShortDate(e.endDate);
     let endTime = (e.allDay || (e.startTime === e.endTime))
                 ? "" : e.endTime;
     let rhs = startDate + " " + startTime;
@@ -32,7 +60,7 @@ class Calendar extends Component {
           <td>{e.title}</td>
           <td>{this.extractDate(e)}</td>
           <td>{e.boxes.join(", ")}</td>
-          <td>{e.notifications.join(", ")}</td>
+          <td>{e.notifications.map(prettyDate).join(", ")}</td>
         </tr>
         );
       }

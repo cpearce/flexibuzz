@@ -58,6 +58,15 @@ class TiqBizAPI {
       return m[0];
     };
 
+    let UTCtoLocal = (s) => {
+      let r = /(\d\d\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)/;
+      let m = s.match(r);
+      if (m == null || m.length < 7) {
+        return s;
+      }
+      return new Date(Date.UTC(m[1], m[2], m[3], m[4], m[5], m[6]));
+    };
+
     let returnEntries = (sink, posts) => {
       var entries = [];
       for (var post of posts) {
@@ -70,7 +79,7 @@ class TiqBizAPI {
           endTime: timeOf(post.start_date),
           allDay: post.all_day,
           boxes: extractBoxes(post.boxes),
-          notifications: post.notifications,
+          notifications: post.notifications.map(UTCtoLocal),
         });
       }
       sink(entries);
