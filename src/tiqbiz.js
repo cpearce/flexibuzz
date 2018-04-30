@@ -64,7 +64,7 @@ class TiqBizAPI {
       if (m == null || m.length < 7) {
         return s;
       }
-      return new Date(Date.UTC(m[1], m[2], m[3], m[4], m[5], m[6]));
+      return new Date(Date.UTC(m[1], parseInt(m[2], 10) - 1, m[3], m[4], m[5], m[6]));
     };
 
     let returnEntries = (sink, posts) => {
