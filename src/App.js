@@ -12,6 +12,21 @@ class HeaderBox extends Component {
   }
 }
 
+class ExpiredEventToggle extends Component {
+  render() {
+    return (
+      <label>
+        Show events before today:
+        <input
+          type="checkbox"
+          value={this.props.showExpired}
+          onClick={this.props.setShowExpired}
+        />
+      </label>
+    );
+  }
+}
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -21,12 +36,14 @@ class App extends Component {
       authenticated: false,
       calendar: null,
       boxes: [],
+      showExpired: false,
     };
     let token = localStorage.getItem("apiToken");
     if (token) {
       this.authenticate(token);
     }
     this.addEvents = this.addEvents.bind(this);
+    this.setShowExpired = this.setShowExpired.bind(this);
   }
 
   async authenticate(token) {
@@ -72,6 +89,25 @@ class App extends Component {
     await this.updateCalendar();
   }
 
+  setShowExpired(event) {
+    this.setState({showExpired: event.target.checked});
+  }
+
+  filteredEvents() {
+    let today = new Date();
+    today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    if (this.state.calendar == null || this.state.showExpired) {
+      return this.state.calendar;
+    }
+    return this.state.calendar.filter(
+        (e) => {
+          let start = (new Date(e.startDate));
+          let end = e.endDate.length > 0 ? new Date(e.endDate) : start;
+          return today <= start || end >= today;
+        }
+      );
+  }
+
   render() {
     return (
       <div className="App">
@@ -82,8 +118,13 @@ class App extends Component {
           authenticated={this.state.authenticated}
         />
         {this.state.authenticated &&
+          <ExpiredEventToggle
+            setShowExpired={this.setShowExpired}
+          />
+        }
+        {this.state.authenticated &&
           <Calendar
-            events={this.state.calendar}
+            events={this.filteredEvents()}
           />
         }
         {this.state.authenticated &&
