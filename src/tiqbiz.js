@@ -28,16 +28,33 @@ class TiqBizAPI {
   }
 
   async calendar(sink) {
-    if (!this.apiToken || !this.business) {
+    if (!this.apiToken || !this.business || !this.boxes) {
       return Promise.reject("Not logged in");
     }
 
     let extractBoxes = (boxes) => {
-      let b = [];
+      // Find which groups' boxes are included in the list of boxes
+      // being notified. Remove the groups' boxes, and add the groups'
+      // names. This gives us a list of groups, rather than boxes,
+      // leaving behind boxes which aren't part of a complete group.
+      let b = new Set();
+      let groupNames = new Set();
       for (var box of boxes) {
-        b.push(box.name);
+        b.add(box.name);
+        groupNames.add(this.boxGroup[box.name]);
       }
-      return b;
+      groupNames = Array.from(groupNames).filter(
+        (g) => Array.from(this.groups[g]).every((box) => b.has(box))
+      );
+      for (let g of groupNames) {
+        for (let box of this.groups[g]) {
+          b.delete(box);
+        }
+        b.add(g);
+      }
+      let a = Array.from(b);
+      a.sort();
+      return a;
     };
 
     let timeOf = (s) => {
@@ -62,6 +79,7 @@ class TiqBizAPI {
       let r = /(\d\d\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)/;
       let m = s.match(r);
       if (m == null || m.length < 7) {
+        console.log("failed to match utc date")
         return s;
       }
       return new Date(Date.UTC(m[1], parseInt(m[2], 10) - 1, m[3], m[4], m[5], m[6]));
@@ -106,6 +124,8 @@ class TiqBizAPI {
     return this.getData("businesses/" + this.business.id + "/boxes", {limit: 999})
     .then((response) => {
       var boxes = [];
+      this.groups = {};
+      this.boxGroup = {};
       for (var box of response.data) {
         boxes.push({
           id: box.id,
@@ -113,7 +133,13 @@ class TiqBizAPI {
           description: box.box_description,
           group: box.box_group,
         });
+        if (this.groups[box.box_group] === undefined) {
+          this.groups[box.box_group] = new Set();
+        }
+        this.groups[box.box_group].add(box.box_name);
+        this.boxGroup[box.box_name] = box.box_group;
       }
+      this.boxes = boxes;
       return boxes;
     });
   }
