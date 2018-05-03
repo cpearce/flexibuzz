@@ -1,12 +1,5 @@
 import React, { Component } from 'react';
 
-function fw(n) {
-  if (n < 10) {
-    return "0" + n;
-  }
-  return "" + n;
-}
-
 const dayOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const month = [
@@ -15,6 +8,7 @@ const month = [
 ];
 
 function prettyDate(d) {
+  let fw = (x) => (x +  "").padStart(2, "0");
   return dayOfWeek[d.getDay()] + " " + d.getDate() + " " + month[d.getMonth()] + " " +
     d.getFullYear() + " " + fw(d.getHours() + ":" + fw(d.getMinutes()));
 }

@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 
+// Pads a number with "0" so it's 2 digits long.
+let fw = (x) => (x +  "").padStart(2, "0");
+
 function today() {
   let d = new Date();
-  let w = (x) => x < 10 ? "0" + x : "" + x;
-  return d.getFullYear() + "-" + w(d.getMonth() + 1) + "-" + w(d.getDate());
+  return d.getFullYear() + "-" + fw(d.getMonth() + 1) + "-" + fw(d.getDate());
 }
 
 function addDays(date, days) {
@@ -37,13 +39,6 @@ function makeShortDateTime(d) {
 
 function makeShortTime(d) {
   return fw(d.getHours()) + ":" + fw(d.getMinutes()) + ":" + fw(d.getSeconds());
-}
-
-function fw(n) {
-  if (n < 10) {
-    return "0" + n;
-  }
-  return "" + n;
 }
 
 function makeShortDate(d) {
