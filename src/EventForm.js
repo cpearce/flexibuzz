@@ -295,89 +295,75 @@ class EventForm extends Component {
     return (
       <div className="EventForm">
         <div>
-          <label>Title:
-            <input
-              type="text"
-              id="title"
-              value={this.state.title}
-              onChange={this.handleInputChange}
-            />
-          </label>
+          <label htmlFor="title">Title:</label>
+          <input
+            type="text"
+            id="title"
+            value={this.state.title}
+            onChange={this.handleInputChange}
+          />
         </div>
         <div>
-          <label>Description:
-            <textarea
-              id="description"
-              value={this.state.description}
-              cols="50"
-              rows="10"
-              onChange={this.handleInputChange}
-            />
-          </label>
+          <label htmlFor="description">Description:</label>
+          <textarea
+            id="description"
+            value={this.state.description}
+            cols="50"
+            rows="10"
+            onChange={this.handleInputChange}
+          />
         </div>
         <div>
-          <label>
-            All day:
-            <input
-              type="checkbox"
-              id="allDay"
-              checked={this.state.allDay}
-              onChange={this.handleAllDayChange}
-            />
-          </label>
-          <label>
-            Date:
-            <input
-              type="date"
-              id="startDate"
-              value={this.state.startDate}
-              onChange={this.handleInputChange}
-            />
-          </label>
+          <label htmlFor="allDay">All day:</label>
+          <input
+            type="checkbox"
+            id="allDay"
+            checked={this.state.allDay}
+            onChange={this.handleAllDayChange}
+          />
+          <label htmlFor="startDate">Date:</label>
+          <input
+            type="date"
+            id="startDate"
+            value={this.state.startDate}
+            onChange={this.handleInputChange}
+          />
           {!this.state.allDay &&
             <div>
-              <label>
-                time:
-                <input
-                  type="time"
-                  id="startTime"
-                  value={this.state.startTime}
-                  onChange={this.handleInputChange}
-                />
-              </label>
-              <label>
-                until:
-                <input
-                  type="time"
-                  id="endTime"
-                  value={this.state.endTime}
-                  onChange={this.handleInputChange}
-                />
-              </label>
+              <label htmlFor="startTime">time:</label>
+              <input
+                type="time"
+                id="startTime"
+                value={this.state.startTime}
+                onChange={this.handleInputChange}
+              />
+              <label htmlFor="endTime">until:</label>
+              <input
+                type="time"
+                id="endTime"
+                value={this.state.endTime}
+                onChange={this.handleInputChange}
+              />
             </div>
           }
         </div>
         <div>
-          <label>
-            Location (name):
-            <input
-              type="text"
-              id="location"
-              value={this.state.location}
-              onChange={this.handleInputChange}
-            />
-          </label>
+          <label htmlFor="location">Location (name):</label>
+          <input
+            type="text"
+            id="location"
+            value={this.state.location}
+            onChange={this.handleInputChange}
+          />
         </div>
         <div>
-          <label>
-            Address:
-            <input
-              type="text"
-              id="address"
-              value={this.state.address}
-              onChange={this.handleInputChange}
-            />
-            </label>
+          <label htmlFor="address">Address:</label>
+          <input
+            type="text"
+            id="address"
+            value={this.state.address}
+            onChange={this.handleInputChange}
+          />
           </div>
         <fieldset>
           <legend>Boxes</legend>
