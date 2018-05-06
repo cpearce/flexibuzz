@@ -293,8 +293,8 @@ class EventForm extends Component {
     );
 
     return (
-      <div className="EventForm">
-        <div>
+      <div className="eventForm">
+        <div className="row">
           <label htmlFor="title">Title:</label>
           <input
             type="text"
@@ -313,7 +313,7 @@ class EventForm extends Component {
             onChange={this.handleInputChange}
           />
         </div>
-        <div>
+        <div className="row">
           <label htmlFor="allDay">All day:</label>
           <input
             type="checkbox"
@@ -321,6 +321,8 @@ class EventForm extends Component {
             checked={this.state.allDay}
             onChange={this.handleAllDayChange}
           />
+        </div>
+        <div>
           <label htmlFor="startDate">Date:</label>
           <input
             type="date"
@@ -328,26 +330,26 @@ class EventForm extends Component {
             value={this.state.startDate}
             onChange={this.handleInputChange}
           />
-          {!this.state.allDay &&
-            <div>
-              <label htmlFor="startTime">time:</label>
-              <input
-                type="time"
-                id="startTime"
-                value={this.state.startTime}
-                onChange={this.handleInputChange}
-              />
-              <label htmlFor="endTime">until:</label>
-              <input
-                type="time"
-                id="endTime"
-                value={this.state.endTime}
-                onChange={this.handleInputChange}
-              />
-            </div>
-          }
         </div>
-        <div>
+        {!this.state.allDay &&
+          <div>
+            <label htmlFor="startTime">time:</label>
+            <input
+              type="time"
+              id="startTime"
+              value={this.state.startTime}
+              onChange={this.handleInputChange}
+            />
+            <label htmlFor="endTime">until:</label>
+            <input
+              type="time"
+              id="endTime"
+              value={this.state.endTime}
+              onChange={this.handleInputChange}
+            />
+          </div>
+        }
+        <div className="row">
           <label htmlFor="location">Location (name):</label>
           <input
             type="text"
@@ -356,7 +358,7 @@ class EventForm extends Component {
             onChange={this.handleInputChange}
           />
         </div>
-        <div>
+        <div className="row">
           <label htmlFor="address">Address:</label>
           <input
             type="text"

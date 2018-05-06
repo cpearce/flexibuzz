@@ -40,3 +40,42 @@
 
 tr:nth-child(even) {background: #CCC}
 tr:nth-child(odd) {background: #FFF}
+
+button, input, select, textarea {
+  font-family : inherit;
+  font-size   : 100%;
+  box-sizing: border-box;
+}
+
+.eventForm {
+  width: 600px;
+  margin: auto;
+  text-align: left;
+  border: solid black 1px;
+  padding: 0.5em;
+}
+
+.eventForm > .row {
+  display: flex;
+  flex-direction: row;
+}
+
+.eventForm > .row > label {
+  flex: initial;
+}
+
+.row > input {
+  flex: auto;
+}
+
+.eventForm textarea {
+  width: 100%;
+}
+
+.eventForm input {
+  display:inline-block;
+}
+
+.eventForm label {
+  display: inline-block;
+}
