@@ -129,6 +129,7 @@ class App extends Component {
         }
         {this.state.authenticated &&
           <EventForm
+            header="Add new event"
             boxes={this.state.boxes}
             onSubmit={this.addEvents}
           />

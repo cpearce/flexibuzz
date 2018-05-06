@@ -294,6 +294,7 @@ class EventForm extends Component {
 
     return (
       <div className="eventForm">
+        <h3>{this.props.header}</h3>
         <div className="row">
           <label htmlFor="title">Title:</label>
           <input
