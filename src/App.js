@@ -37,6 +37,7 @@ class App extends Component {
       calendar: null,
       boxes: [],
       showExpired: false,
+      showAddEvent: false,
     };
     let token = localStorage.getItem("apiToken");
     if (token) {
@@ -108,6 +109,10 @@ class App extends Component {
       );
   }
 
+  setShowAddEvent(show, event) {
+    this.setState({showAddEvent: show});
+  }
+
   render() {
     return (
       <div className="App">
@@ -128,10 +133,16 @@ class App extends Component {
           />
         }
         {this.state.authenticated &&
+         !this.state.showAddEvent &&
+          <button onClick={this.setShowAddEvent.bind(this, true)}>Create new event</button>
+        }
+        {this.state.authenticated &&
+         this.state.showAddEvent &&
           <EventForm
             header="Add new event"
             boxes={this.state.boxes}
             onSubmit={this.addEvents}
+            cancel={this.setShowAddEvent.bind(this, false)}
           />
         }
       </div>

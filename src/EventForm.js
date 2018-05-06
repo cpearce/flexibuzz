@@ -407,7 +407,8 @@ class EventForm extends Component {
           { this.state.recurrencePeriod !== 0 && repetitionRangeControls }
           { repetitions }
         </fieldset>
-        <p><button onClick={this.handleSubmit}>Create event</button></p>
+        <button onClick={this.handleSubmit}>Create event</button>
+        <button onClick={this.props.cancel}>Cancel</button>
       </div>
     );
   }
