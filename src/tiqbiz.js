@@ -28,8 +28,8 @@ class TiqBizAPI {
   }
 
   async calendar(sink) {
-    if (!this.apiToken || !this.business || !this.boxes) {
-      return Promise.reject("Not logged in");
+    if (!this.apiToken || !this.business) {
+      throw new Error("Not logged in");
     }
 
     let extractBoxes = (boxes) => {
