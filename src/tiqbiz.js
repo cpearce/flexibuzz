@@ -117,31 +117,33 @@ class TiqBizAPI {
     }
   }
 
-  boxes() {
-    if (!this.apiToken || !this.business) {
-      return Promise.reject("Not logged in");
+  async boxes() {
+    if (this.boxList) {
+      return this.boxList;
     }
-    return this.getData("businesses/" + this.business.id + "/boxes", {limit: 999})
-    .then((response) => {
-      var boxes = [];
-      this.groups = {};
-      this.boxGroup = {};
-      for (var box of response.data) {
-        boxes.push({
-          id: box.id,
-          name: box.box_name,
-          description: box.box_description,
-          group: box.box_group,
-        });
-        if (this.groups[box.box_group] === undefined) {
-          this.groups[box.box_group] = new Set();
-        }
-        this.groups[box.box_group].add(box.box_name);
-        this.boxGroup[box.box_name] = box.box_group;
+    if (!this.apiToken || !this.business) {
+      throw new Error("Not logged in");
+    }
+    let response = await this.getData(
+      "businesses/" + this.business.id + "/boxes", {limit: 999})
+    var boxList = [];
+    this.groups = {};
+    this.boxGroup = {};
+    for (var box of response.data) {
+      boxList.push({
+        id: box.id,
+        name: box.box_name,
+        description: box.box_description,
+        group: box.box_group,
+      });
+      if (this.groups[box.box_group] === undefined) {
+        this.groups[box.box_group] = new Set();
       }
-      this.boxes = boxes;
-      return boxes;
-    });
+      this.groups[box.box_group].add(box.box_name);
+      this.boxGroup[box.box_name] = box.box_group;
+    }
+    this.boxList = boxList;
+    return boxList;
   }
 
   addEvent(data) {
