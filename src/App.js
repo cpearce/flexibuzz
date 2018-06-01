@@ -7,7 +7,9 @@ import './App.css';
 class HeaderBox extends Component {
   render() {
     return (
-      <h1>Flexibuzz Calendar</h1>
+      <div>
+        <h1>{this.props.businessName} Flexibuzz Notification Schedule</h1>
+      </div>
     );
   }
 }
@@ -34,6 +36,7 @@ class App extends Component {
     this.login = this.login.bind(this);
     this.state = {
       authenticated: false,
+      businessName: "",
       calendar: null,
       boxes: [],
       showExpired: false,
@@ -50,12 +53,12 @@ class App extends Component {
   async authenticate(token) {
     await this.props.tiqbiz.authenticate(token);
     localStorage.setItem("apiToken", token);
-    this.setState({authenticated: true});
-
-    this.props.tiqbiz.boxes().then((boxes => {
-      this.setState({ boxes: boxes });
-    }));
-
+    this.setState({
+      authenticated: true,
+      businessName: this.props.tiqbiz.business.name,
+    });
+    let boxes = await this.props.tiqbiz.boxes();
+    this.setState({ boxes: boxes });
     this.updateCalendar();
   }
 
@@ -114,30 +117,38 @@ class App extends Component {
   }
 
   render() {
+    if (!this.state.authenticated) {
+      return (
+        <div className="App">
+          <LoginBox
+            login={this.login}
+            logout={this.logout}
+            authenticated={this.state.authenticated}
+          />
+        </div>
+      );
+    }
+
     return (
       <div className="App">
-        <HeaderBox />
+        <HeaderBox
+          businessName={this.state.businessName}
+        />
         <LoginBox
           login={this.login}
           logout={this.logout}
           authenticated={this.state.authenticated}
         />
-        {this.state.authenticated &&
-          <ExpiredEventToggle
-            setShowExpired={this.setShowExpired}
-          />
-        }
-        {this.state.authenticated &&
-          <Calendar
-            events={this.filteredEvents()}
-          />
-        }
-        {this.state.authenticated &&
-         !this.state.showAddEvent &&
+        <ExpiredEventToggle
+          setShowExpired={this.setShowExpired}
+        />
+        <Calendar
+          events={this.filteredEvents()}
+        />
+        {!this.state.showAddEvent &&
           <button onClick={this.setShowAddEvent.bind(this, true)}>Create new event</button>
         }
-        {this.state.authenticated &&
-         this.state.showAddEvent &&
+        {this.state.showAddEvent &&
           <EventForm
             header="Add new event"
             boxes={this.state.boxes}
