@@ -28,7 +28,6 @@
 }
 
 #calendar {
-  border: solid black 1px;
   margin: 5px;
   padding: 5px;
 }
@@ -78,4 +77,56 @@ button, input, select, textarea {
 
 .eventForm label {
   display: inline-block;
+}
+
+#header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2em;
+  background-color: #abcdef;
+}
+
+#main {
+  position: fixed;
+  top: 2em;
+  bottom: 2em;
+  left: 0;
+  right: 0;
+  overflow: auto;
+}
+
+#footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2em;
+  background-color: #abcdef;
+}
+
+.ExpiredEventToggle {
+  display: inline;
+}
+
+.LogoutBox {
+  display: inline-block;
+  position: fixed;
+  top: 0;
+  right: 0;
+  padding: .4em;
+}
+
+#show-event-button {
+  display: inline-block;
+  padding: .3em;
+}
+
+#header-title {
+  position: fixed;
+  top: 0;
+  left: 0;
+  font-size: 1.4em;
+  padding: .2em;
 }

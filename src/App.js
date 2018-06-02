@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Calendar from './Calendar.js';
-import LoginBox from './LoginBox.js';
+import {LoginBox,LogoutBox} from './LoginBox.js';
 import EventForm from './EventForm.js';
 import './App.css';
 
@@ -37,6 +37,7 @@ class App extends Component {
     this.state = {
       authenticated: false,
       businessName: "",
+      userFullName: "",
       calendar: null,
       boxes: [],
       showExpired: false,
@@ -56,6 +57,7 @@ class App extends Component {
     this.setState({
       authenticated: true,
       businessName: this.props.tiqbiz.business.name,
+      userFullName: this.props.tiqbiz.userFullName,
     });
     let boxes = await this.props.tiqbiz.boxes();
     this.setState({ boxes: boxes });
@@ -129,35 +131,46 @@ class App extends Component {
       );
     }
 
+    let main = this.state.showAddEvent ?
+    (
+      <EventForm
+        header="Add new event"
+        boxes={this.state.boxes}
+        groups={this.props.tiqbiz.groups}
+        boxGroups={this.props.tiqbiz.boxGroups}
+        onSubmit={this.addEvents}
+        cancel={this.setShowAddEvent.bind(this, false)}
+      />
+    ) : (
+      <Calendar
+        events={this.filteredEvents()}
+      />
+    );
+
     return (
       <div className="App">
-        <HeaderBox
-          businessName={this.state.businessName}
-        />
-        <LoginBox
-          login={this.login}
-          logout={this.logout}
-          authenticated={this.state.authenticated}
-        />
-        <ExpiredEventToggle
-          setShowExpired={this.setShowExpired}
-        />
-        <Calendar
-          events={this.filteredEvents()}
-        />
-        {!this.state.showAddEvent &&
-          <button onClick={this.setShowAddEvent.bind(this, true)}>Create new event</button>
-        }
-        {this.state.showAddEvent &&
-          <EventForm
-            header="Add new event"
-            boxes={this.state.boxes}
-            groups={this.props.tiqbiz.groups}
-            boxGroups={this.props.tiqbiz.boxGroups}
-            onSubmit={this.addEvents}
-            cancel={this.setShowAddEvent.bind(this, false)}
+        <div id="header">
+          <div id="header-title">
+            Flexibuzz Notification Schedule: {this.state.businessName}
+          </div>
+          <LogoutBox
+            userFullName={this.state.userFullName}
+            logout={this.logout}
           />
-        }
+        </div>
+        <div id="main">
+          {main}
+        </div>
+        <div id="footer">
+          <ExpiredEventToggle
+            setShowExpired={this.setShowExpired}
+          />
+          <div id="show-event-button">
+            {!this.state.showAddEvent &&
+              <button onClick={this.setShowAddEvent.bind(this, true)}>Create new event</button>
+            }
+          </div>
+        </div>
       </div>
     );
   }

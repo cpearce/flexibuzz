@@ -27,6 +27,7 @@ class TiqBizAPI {
     this.apiToken = token;
     let response = await this.getData("users/auth", {});
     this.business = response.admin_of[0];
+    this.userFullName = response.first_name + " " + response.last_name;
   }
 
   async calendar(sink) {

@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 
-class LoginBox extends Component {
+export class LoginBox extends Component {
   constructor(props) {
     super(props);
     this.state = {username: '', password: ''};
     this.handleLogin = this.handleLogin.bind(this);
-    this.handleLogout = this.handleLogout.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
   }
 
@@ -15,24 +14,12 @@ class LoginBox extends Component {
     });
   }
 
-  handleLogout(event) {
-    event.preventDefault();
-    this.props.logout();
-  }
-
   handleLogin(event) {
     event.preventDefault();
     this.props.login(this.state.username, this.state.password);
   }
 
   render() {
-    if (this.props.authenticated) {
-      return (
-        <form className="LoginBox" onSubmit={this.handleLogout}>
-          <input type="submit" value="Logout" />
-        </form>
-      );
-    }
     return (
       <form className="LoginBox" onSubmit={this.handleLogin}>
         <label>
@@ -61,4 +48,24 @@ class LoginBox extends Component {
   }
 }
 
-export default LoginBox;
+export class LogoutBox extends Component {
+  constructor(props) {
+    super(props);
+    this.handleLogout = this.handleLogout.bind(this);
+  }
+
+  handleLogout(event) {
+    event.preventDefault();
+    this.props.logout();
+  }
+
+  render() {
+    return (
+      <div class="LogoutBox">
+        <form className="LoginBox" onSubmit={this.handleLogout}>
+          Logged in as {this.props.userFullName} <input type="submit" value="Logout" />
+        </form>
+      </div>
+    );
+  }
+}
