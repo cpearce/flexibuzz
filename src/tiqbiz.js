@@ -1,3 +1,5 @@
+import SortMaybeAsInt from './Util.js'
+
 const API_URL = "https://api.tiqbiz.com/v6/";
 
 class TiqBizAPI {
@@ -142,6 +144,9 @@ class TiqBizAPI {
       this.groups[box.box_group].add(box.box_name);
       this.boxGroup[box.box_name] = box.box_group;
     }
+
+    SortMaybeAsInt(boxList, b => b.name);
+
     this.boxList = boxList;
     return boxList;
   }

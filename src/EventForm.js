@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import SortMaybeAsInt from './Util.js'
 
 // Pads a number with "0" so it's 2 digits long.
 let fw = (x) => (x +  "").padStart(2, "0");
@@ -269,11 +270,13 @@ class EventForm extends Component {
       }
     ));
 
+    let groupNames = Object.keys(this.props.groups);
+    SortMaybeAsInt(groupNames);
     let groups = (
       <div id="group-list">
       {
         this.props.groups &&
-        Object.keys(this.props.groups).map(
+        groupNames.map(
           (groupName) => {
             var id = "group-list-" + groupName;
             return (
