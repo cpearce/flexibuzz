@@ -71,6 +71,11 @@ class EventForm extends Component {
     this.handleUpdateRecurrencePeriod = this.handleUpdateRecurrencePeriod.bind(this);
     this.handleRecurrenceEndChange = this.handleRecurrenceEndChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+
+    // Cache lookup table of box name to box id.
+    this.boxNameToId = new Map(
+      this.props.boxes.map(b => [b.name, b.id])
+    );
   }
 
   handleInputChange(event) {
@@ -92,6 +97,22 @@ class EventForm extends Component {
         prev.selectedBoxes.add(boxId);
       } else {
         prev.selectedBoxes.delete(boxId);
+      }
+      return { selectedBoxes: prev.selectedBoxes };
+    });
+  }
+
+  handleGroupCheckChange(groupName, event) {
+    let boxNamesInGroup = this.props.groups[groupName];
+    let checked = event.target.checked;
+    this.setState((prev) => {
+      for (let boxName of boxNamesInGroup) {
+        let boxId = this.boxNameToId.get(boxName);
+        if (checked) {
+          prev.selectedBoxes.add(boxId);
+        } else {
+          prev.selectedBoxes.delete(boxId);
+        }
       }
       return { selectedBoxes: prev.selectedBoxes };
     });
@@ -238,6 +259,40 @@ class EventForm extends Component {
       </div>
     );
 
+    // Get list of selected groups by looking over all selected boxes and seeing
+    // which groups' boxes are all selected.
+    let selectedGroups = new Set(Object.keys(this.props.groups).filter(
+      (groupName) => {
+        return Array.from(this.props.groups[groupName]).every(
+          (boxName) => this.state.selectedBoxes.has(this.boxNameToId.get(boxName))
+        );
+      }
+    ));
+
+    let groups = (
+      <div id="group-list">
+      {
+        this.props.groups &&
+        Object.keys(this.props.groups).map(
+          (groupName) => {
+            var id = "group-list-" + groupName;
+            return (
+                <label key={id}>
+                  {groupName}
+                  <input type="checkbox"
+                        id={id}
+                        checked={selectedGroups.has(groupName)}
+                        onChange={this.handleGroupCheckChange.bind(this, groupName)}
+                  />
+                </label>
+            );
+
+          }
+        )
+      }
+      </div>
+    );
+
     let notifications = (
       <div id="notificationsList">
       {
@@ -371,6 +426,10 @@ class EventForm extends Component {
         <fieldset>
           <legend>Boxes</legend>
           {boxes}
+        </fieldset>
+        <fieldset>
+          <legend>Groups</legend>
+          {groups}
         </fieldset>
         <fieldset>
           <legend>Notifications</legend>

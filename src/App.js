@@ -152,6 +152,8 @@ class App extends Component {
           <EventForm
             header="Add new event"
             boxes={this.state.boxes}
+            groups={this.props.tiqbiz.groups}
+            boxGroups={this.props.tiqbiz.boxGroups}
             onSubmit={this.addEvents}
             cancel={this.setShowAddEvent.bind(this, false)}
           />
