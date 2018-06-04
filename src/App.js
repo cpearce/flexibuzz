@@ -4,16 +4,6 @@ import {LoginBox,LogoutBox} from './LoginBox.js';
 import EventForm from './EventForm.js';
 import './App.css';
 
-class HeaderBox extends Component {
-  render() {
-    return (
-      <div>
-        <h1>{this.props.businessName} Flexibuzz Notification Schedule</h1>
-      </div>
-    );
-  }
-}
-
 class ExpiredEventToggle extends Component {
   render() {
     return (
