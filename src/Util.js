@@ -1,6 +1,5 @@
 function SortMaybeAsInt(array, toKey) {
   array.sort((a, b) => {
-    console.log("sort cmp(" + a + "," + b + ")");
     a = (toKey ? toKey(a) : a).split(/\s+/);
     b = (toKey ? toKey(b) : b).split(/\s+/);
     let ai = 0;
