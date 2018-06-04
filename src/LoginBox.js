@@ -61,8 +61,8 @@ export class LogoutBox extends Component {
 
   render() {
     return (
-      <div class="LogoutBox">
-        <form className="LoginBox" onSubmit={this.handleLogout}>
+      <div className="LogoutBox">
+        <form onSubmit={this.handleLogout}>
           Logged in as {this.props.userFullName} <input type="submit" value="Logout" />
         </form>
       </div>
