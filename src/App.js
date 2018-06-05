@@ -4,6 +4,9 @@ import {LoginBox,LogoutBox} from './LoginBox.js';
 import EventForm from './EventForm.js';
 import './App.css';
 
+const CalendarScreen = 1;
+const CreateNewEventScreen = 2;
+
 class ExpiredEventToggle extends Component {
   render() {
     return (
@@ -31,7 +34,7 @@ class App extends Component {
       calendar: null,
       boxes: [],
       showExpired: false,
-      showAddEvent: false,
+      screen: CalendarScreen,
     };
     let token = localStorage.getItem("apiToken");
     if (token) {
@@ -105,7 +108,31 @@ class App extends Component {
   }
 
   setShowAddEvent(show, event) {
-    this.setState({showAddEvent: show});
+    this.setState({screen: show ? CreateNewEventScreen : CalendarScreen});
+  }
+
+  renderMain() {
+    switch (this.state.screen) {
+      case CalendarScreen: {
+        return (
+          <Calendar
+            events={this.filteredEvents()}
+          />
+        );
+      }
+      case CreateNewEventScreen: {
+        return (
+          <EventForm
+            header="Add new event"
+            boxes={this.state.boxes}
+            groups={this.props.tiqbiz.groups}
+            boxGroups={this.props.tiqbiz.boxGroups}
+            onSubmit={this.addEvents}
+            cancel={this.setShowAddEvent.bind(this, false)}
+          />
+        );
+      }
+    }
   }
 
   render() {
@@ -121,22 +148,6 @@ class App extends Component {
       );
     }
 
-    let main = this.state.showAddEvent ?
-    (
-      <EventForm
-        header="Add new event"
-        boxes={this.state.boxes}
-        groups={this.props.tiqbiz.groups}
-        boxGroups={this.props.tiqbiz.boxGroups}
-        onSubmit={this.addEvents}
-        cancel={this.setShowAddEvent.bind(this, false)}
-      />
-    ) : (
-      <Calendar
-        events={this.filteredEvents()}
-      />
-    );
-
     return (
       <div className="App">
         <div id="header">
@@ -149,14 +160,14 @@ class App extends Component {
           />
         </div>
         <div id="main">
-          {main}
+          {this.renderMain()}
         </div>
         <div id="footer">
           <ExpiredEventToggle
             setShowExpired={this.setShowExpired}
           />
           <div id="show-event-button">
-            {!this.state.showAddEvent &&
+            {this.state.screen !== CreateNewEventScreen &&
               <button onClick={this.setShowAddEvent.bind(this, true)}>Create new event</button>
             }
           </div>
