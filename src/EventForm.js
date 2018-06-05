@@ -46,20 +46,57 @@ function makeShortDate(d) {
   return d.getFullYear() + "-" + fw(d.getMonth() + 1) + "-" + fw(d.getDate());
 }
 
+function daysBetween(a, b) {
+  return Math.round((a.getTime() - b.getTime()) / 8.64e7);
+}
+
 class EventForm extends Component {
   constructor(props) {
     super(props);
+
+    // Cache lookup table of box name to box id.
+    this.boxNameToId = new Map(
+      this.props.boxes.map(b => [b.name, b.id])
+    );
+
+    const dupe = this.props.duplicatee;
+
+    let timeOf = (s) => {
+      if (!s) {
+        return "";
+      }
+      let r = /(\d\d:\d\d):\d\d/;
+      let m = s.match(r);
+      if (m.length < 2) {
+        return s;
+      }
+      return m[1];
+    };
+
+    let notifications = dupe.notifications ?
+      dupe.notifications.map((n) => {
+        return {
+          time: timeOf(n.toTimeString()),
+          dayOffset: daysBetween(new Date(n), new Date(dupe.startDate)),
+        }
+      }).filter(
+        x => x.dayOffset == 0 || x.dayOffset == -1
+      )
+    : [];
+
+    let selectedBoxes = (dupe && dupe.boxes)
+      ? new Set(dupe.boxIds) : new Set();
     this.state = {
-      title: '',
-      description: '',
-      allDay: true,
-      startDate: today(),
-      startTime: '09:00',
-      endTime: '',
-      location: '',
-      address: '',
-      selectedBoxes: new Set(),
-      notifications: [],
+      title: dupe ? dupe.title : '',
+      description: dupe ? dupe.description : '',
+      allDay: dupe ? dupe.allDay : true,
+      startDate: dupe ? dupe.startDate : today(),
+      startTime: dupe ? dupe.startTime : '09:00',
+      endTime: dupe ? dupe.endTime : '',
+      location: dupe ? dupe.location : '',
+      address: dupe ? dupe.address : '',
+      selectedBoxes: selectedBoxes,
+      notifications: notifications,
       notificationTime: "09:00",
       notificationDay: -1,
       recurrencePeriod: 0,
@@ -72,11 +109,6 @@ class EventForm extends Component {
     this.handleUpdateRecurrencePeriod = this.handleUpdateRecurrencePeriod.bind(this);
     this.handleRecurrenceEndChange = this.handleRecurrenceEndChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-
-    // Cache lookup table of box name to box id.
-    this.boxNameToId = new Map(
-      this.props.boxes.map(b => [b.name, b.id])
-    );
   }
 
   handleInputChange(event) {

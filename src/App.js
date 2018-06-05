@@ -6,6 +6,7 @@ import './App.css';
 
 const CalendarScreen = 1;
 const CreateNewEventScreen = 2;
+const DuplicateEventScreen = 3;
 
 class ExpiredEventToggle extends Component {
   render() {
@@ -35,6 +36,7 @@ class App extends Component {
       boxes: [],
       showExpired: false,
       screen: CalendarScreen,
+      duplicateEventId: null,
     };
     let token = localStorage.getItem("apiToken");
     if (token) {
@@ -107,19 +109,20 @@ class App extends Component {
       );
   }
 
-  setShowAddEvent(show, event) {
-    this.setState({screen: show ? CreateNewEventScreen : CalendarScreen});
+  setScreen(screen, event) {
+    this.setState({screen: screen});
+  }
+
+  duplicateCalendarEvent(eventId) {
+    console.log("Duplicate " + eventId);
+    this.setState({
+      duplicateEventId: eventId,
+      screen: DuplicateEventScreen,
+    });
   }
 
   renderMain() {
     switch (this.state.screen) {
-      case CalendarScreen: {
-        return (
-          <Calendar
-            events={this.filteredEvents()}
-          />
-        );
-      }
       case CreateNewEventScreen: {
         return (
           <EventForm
@@ -128,7 +131,32 @@ class App extends Component {
             groups={this.props.tiqbiz.groups}
             boxGroups={this.props.tiqbiz.boxGroups}
             onSubmit={this.addEvents}
-            cancel={this.setShowAddEvent.bind(this, false)}
+            cancel={this.setScreen.bind(this, CalendarScreen)}
+          />
+        );
+      }
+      case DuplicateEventScreen: {
+        let duplicatee = this.state.calendar.find(
+          (e) => e.id === this.state.duplicateEventId
+        );
+        return (
+          <EventForm
+            header="Duplicate existing event"
+            boxes={this.state.boxes}
+            groups={this.props.tiqbiz.groups}
+            boxGroups={this.props.tiqbiz.boxGroups}
+            duplicatee={duplicatee}
+            onSubmit={this.addEvents}
+            cancel={this.setScreen.bind(this, CalendarScreen)}
+          />
+        );
+      }
+      case CalendarScreen:
+      default: {
+        return (
+          <Calendar
+            events={this.filteredEvents()}
+            onDuplicateCalendarEvent={this.duplicateCalendarEvent.bind(this)}
           />
         );
       }
@@ -168,7 +196,7 @@ class App extends Component {
           />
           <div id="show-event-button">
             {this.state.screen !== CreateNewEventScreen &&
-              <button onClick={this.setShowAddEvent.bind(this, true)}>Create new event</button>
+              <button onClick={this.setScreen.bind(this, CreateNewEventScreen)}>Create new event</button>
             }
           </div>
         </div>

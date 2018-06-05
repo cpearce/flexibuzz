@@ -94,13 +94,17 @@ class TiqBizAPI {
         entries.push({
           id: post.id,
           title: post.title,
+          description: post.body_markdown,
           startDate: dateOf(post.start_date),
           startTime: timeOf(post.start_date),
           endDate: dateOf(post.end_date),
-          endTime: timeOf(post.start_date),
+          endTime: post.end_date ? timeOf(post.end_date) : "",
           allDay: post.all_day,
           boxes: extractBoxes(post.boxes),
+          boxIds: post.boxes.map(b => b.id),
           notifications: post.notifications.map(UTCtoLocal),
+          location: post.location,
+          address: post.address,
         });
       }
       sink(entries);

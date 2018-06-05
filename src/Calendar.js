@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import duplicateImage from './duplicate.svg';
 
 const dayOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -51,6 +52,16 @@ class Calendar extends Component {
       (e) => {
         return (
         <tr key={e.id}>
+          <td>
+            <img
+              className="duplicateButton"
+              src={duplicateImage}
+              onClick={() => this.props.onDuplicateCalendarEvent(e.id)}
+              alt="Duplicate calendar event"
+              width="25"
+              height="25"
+            />
+          </td>
           <td>{e.title}</td>
           <td>{this.extractDate(e)}</td>
           <td>{e.boxes.join(", ")}</td>
