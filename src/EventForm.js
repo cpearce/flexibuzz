@@ -102,6 +102,7 @@ class EventForm extends Component {
       recurrencePeriod: 0,
       recurrenceEndDate: today(),
       repetitions: [],
+      submitButtonDisabled: false,
     };
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleAllDayChange = this.handleAllDayChange.bind(this);
@@ -209,6 +210,7 @@ class EventForm extends Component {
   }
 
   handleSubmit() {
+    this.setState({ submitButtonDisabled: true });
     let startTime = this.state.startTime + ":00";
     let endTime = undefined;
     if (this.state.endTime.length > 0) {
@@ -501,7 +503,12 @@ class EventForm extends Component {
           { this.state.recurrencePeriod !== 0 && repetitionRangeControls }
           { repetitions }
         </fieldset>
-        <button onClick={this.handleSubmit}>Create event</button>
+        <button
+          onClick={this.handleSubmit}
+          disabled={this.state.submitButtonDisabled}
+        >
+          Create event
+        </button>
         <button onClick={this.props.cancel}>Cancel</button>
       </div>
     );
