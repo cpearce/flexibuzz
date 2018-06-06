@@ -73,7 +73,7 @@ class EventForm extends Component {
       return m[1];
     };
 
-    let notifications = dupe.notifications ?
+    let notifications = (dupe && dupe.notifications) ?
       dupe.notifications.map((n) => {
         return {
           time: timeOf(n.toTimeString()),
