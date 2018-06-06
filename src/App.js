@@ -191,14 +191,16 @@ class App extends Component {
           {this.renderMain()}
         </div>
         <div id="footer">
-          <ExpiredEventToggle
-            setShowExpired={this.setShowExpired}
-          />
-          <div id="show-event-button">
-            {this.state.screen !== CreateNewEventScreen &&
-              <button onClick={this.setScreen.bind(this, CreateNewEventScreen)}>Create new event</button>
-            }
-          </div>
+          {this.state.screen === CalendarScreen &&
+            <div>
+              <ExpiredEventToggle
+                setShowExpired={this.setShowExpired}
+              />
+              <div id="show-event-button">
+                <button onClick={this.setScreen.bind(this, CreateNewEventScreen)}>Create new event</button>
+              </div>
+            </div>
+          }
         </div>
       </div>
     );
