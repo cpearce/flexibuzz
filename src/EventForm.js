@@ -80,7 +80,7 @@ class EventForm extends Component {
           dayOffset: daysBetween(new Date(n), new Date(dupe.startDate)),
         }
       }).filter(
-        x => x.dayOffset == 0 || x.dayOffset == -1
+        x => x.dayOffset === 0 || x.dayOffset === -1
       )
     : [];
 
