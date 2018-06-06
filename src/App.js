@@ -42,7 +42,7 @@ class App extends Component {
     if (token) {
       this.authenticate(token);
     }
-    this.addEvents = this.addEvents.bind(this);
+    this.onAddEvents = this.onAddEvents.bind(this);
     this.setShowExpired = this.setShowExpired.bind(this);
   }
 
@@ -83,10 +83,11 @@ class App extends Component {
     await this.authenticate(token);
   }
 
-  async addEvents(events) {
+  async onAddEvents(events) {
     for (let event of events) {
       await this.props.tiqbiz.addEvent(event);
     }
+    this.setScreen(CalendarScreen);
     await this.updateCalendar();
   }
 
@@ -130,7 +131,7 @@ class App extends Component {
             boxes={this.state.boxes}
             groups={this.props.tiqbiz.groups}
             boxGroups={this.props.tiqbiz.boxGroups}
-            onSubmit={this.addEvents}
+            onSubmit={this.onAddEvents}
             cancel={this.setScreen.bind(this, CalendarScreen)}
           />
         );
@@ -146,7 +147,7 @@ class App extends Component {
             groups={this.props.tiqbiz.groups}
             boxGroups={this.props.tiqbiz.boxGroups}
             duplicatee={duplicatee}
-            onSubmit={this.addEvents}
+            onSubmit={this.onAddEvents}
             cancel={this.setScreen.bind(this, CalendarScreen)}
           />
         );
