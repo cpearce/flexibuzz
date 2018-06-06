@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import Calendar from './Calendar.js';
 import {LoginBox,LogoutBox} from './LoginBox.js';
 import EventForm from './EventForm.js';
+import {GoogleCalendarImport} from './GoogleCalendarImport.js'
 import './App.css';
 
 const CalendarScreen = 1;
 const CreateNewEventScreen = 2;
 const DuplicateEventScreen = 3;
+const ImportGoogleCalendarScreen = 4;
 
 class ExpiredEventToggle extends Component {
   render() {
@@ -152,6 +154,13 @@ class App extends Component {
           />
         );
       }
+      case ImportGoogleCalendarScreen: {
+        return (
+          <GoogleCalendarImport
+            onCancel={this.setScreen.bind(this, CalendarScreen)}
+          />
+        );
+      }
       case CalendarScreen:
       default: {
         return (
@@ -197,9 +206,12 @@ class App extends Component {
               <ExpiredEventToggle
                 setShowExpired={this.setShowExpired}
               />
-              <div id="show-event-button">
-                <button onClick={this.setScreen.bind(this, CreateNewEventScreen)}>Create new event</button>
-              </div>
+              <button onClick={this.setScreen.bind(this, CreateNewEventScreen)}>
+                Create new event
+              </button>
+              <button onClick={this.setScreen.bind(this, ImportGoogleCalendarScreen)}>
+                Import Google Calendar
+              </button>
             </div>
           }
         </div>

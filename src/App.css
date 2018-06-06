@@ -118,9 +118,9 @@ button, input, select, textarea {
   padding: .4em;
 }
 
-#show-event-button {
-  display: inline-block;
-  padding: .3em;
+
+#footer button {
+  margin: .2em;
 }
 
 #header-title {
