@@ -138,3 +138,8 @@ button, input, select, textarea {
 .duplicateButton:active {
   background-color: royalblue;
 }
+
+
+.gcal-item {
+  text-align: left;
+}
