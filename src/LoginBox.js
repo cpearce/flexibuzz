@@ -1,9 +1,30 @@
 import React, { Component } from 'react';
 
+class RememberToggle extends Component {
+  render() {
+    return (
+      <label>
+        Remember username/password:
+        <input
+          type="checkbox"
+          checked={this.props.remember}
+          onChange={this.props.onChange}
+        />
+      </label>
+    );
+  }
+}
+
 export class LoginBox extends Component {
   constructor(props) {
     super(props);
-    this.state = {username: '', password: ''};
+    const remember = localStorage.getItem("rememberUserPass") === "true";
+    console.log("LoginBox ctor, remember=" + remember);
+    this.state = {
+      username: remember ? localStorage.getItem("username") : "",
+      password: remember ? localStorage.getItem("password") : "",
+      remember: remember,
+    };
     this.handleLogin = this.handleLogin.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
   }
@@ -16,7 +37,24 @@ export class LoginBox extends Component {
 
   handleLogin(event) {
     event.preventDefault();
+    if (this.state.remember) {
+      localStorage.setItem("username", this.state.username);
+      localStorage.setItem("password", this.state.password);
+    }
     this.props.login(this.state.username, this.state.password);
+  }
+
+  onRememberToggle(event) {
+    const remember = event.target.checked;
+    console.log("onRememberToggle remember=" + remember);
+    localStorage.setItem("rememberUserPass", remember);
+    if (!remember) {
+      localStorage.removeItem("username");
+      localStorage.removeItem("password");
+    }
+    this.setState({
+      remember: remember,
+    });
   }
 
   render() {
@@ -42,6 +80,10 @@ export class LoginBox extends Component {
           />
         </label>
         <br />
+        <RememberToggle
+          onChange={this.onRememberToggle.bind(this)}
+          remember={this.state.remember}
+        />
         <input type="submit" value="Login" />
       </form>
     );
