@@ -74,6 +74,7 @@ class Calendar extends Component {
       <table id="calendar">
         <thead>
           <tr>
+            <td></td>
             <td>Title</td>
             <td>Date</td>
             <td>Boxes</td>
