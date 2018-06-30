@@ -44,6 +44,7 @@ export class GoogleCalendarImport extends Component {
       googleCalendarId: localStorage.getItem("googleCalendarId"),
       startDate: "",
       endDate: "",
+      selectedItems: new Set(),
     };
   }
 
@@ -61,7 +62,11 @@ export class GoogleCalendarImport extends Component {
         return accumulator.concat(confirmed);
       }, []);
       items.sort((a,b) => a.start.date.localeCompare(b.start.date));
-      this.setState({items: items});
+      let selectedItems = new Set();
+      for (let item of items) {
+        selectedItems.add(item.id);
+      }
+      this.setState({items: items, selectedItems: selectedItems});
       console.log(items);
     },(err) => {
       console.log(err);
@@ -133,26 +138,58 @@ export class GoogleCalendarImport extends Component {
     );
   }
 
+  handleItemCheckedChange(itemId, event) {
+    let checked = event.target.checked;
+    this.setState((prev) => {
+      if (checked) {
+        prev.selectedItems.add(itemId);
+      } else {
+        prev.selectedItems.delete(itemId);
+      }
+      return { selectedItems: prev.selectedItems };
+    })
+  }
+
   renderLoadingScreen() {
-    let items;
     if (this.state.items.length === 0) {
-      items = (
+      return (
         <div>
           Loading...
+          <button onClick={this.props.onCancel.bind(this)}>
+            Cancel
+          </button>
         </div>
       );
-    } else {
-      items = this.state.items.map((item) => {
-        return (
-          <div key={item.id} className="gcal-item">
-            {item.start.date} - {item.end.date} ; {item.summary}
-          </div>
-        );
-      });
     }
+    let items = this.state.items.map((item) => {
+      return (
+        <tr key={item.id} className="gcal-item">
+          <td>
+            <input type="checkbox"
+                    onChange={this.handleItemCheckedChange.bind(this, item.id)}
+                    checked={this.state.selectedItems.has(item.id)}
+            />
+          </td>
+          <td>
+            {item.start.date} - {item.end.date} ; {item.summary}
+          </td>
+        </tr>
+      );
+    });
+
     return (
       <div>
-        {items}
+        <table>
+          <thead>
+            <tr>
+              <td>Import</td>
+              <td>Item</td>
+            </tr>
+          </thead>
+          <tbody>
+            {items}
+          </tbody>
+        </table>
         <button onClick={this.props.onCancel.bind(this)}>
           Cancel
         </button>
