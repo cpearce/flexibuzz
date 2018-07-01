@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import SortMaybeAsInt from './Util.js'
+import {NotificationSelector} from './NotificationSelector.js'
 
 // Pads a number with "0" so it's 2 digits long.
 let fw = (x) => (x +  "").padStart(2, "0");
@@ -152,16 +153,7 @@ class EventForm extends Component {
     });
   }
 
-  handleAddNotification(event) {
-    const days = {
-      "0": 0,
-      "-1": -1,
-    };
-    const offset = days[this.state.notificationDay];
-    let n = {
-      time: this.state.notificationTime,
-      dayOffset: offset,
-    };
+  handleAddNotification(n) {
     let found = this.state.notifications.find(
       e => e.time === n.time && e.dayOffset === n.dayOffset);
     if (found) {
@@ -170,6 +162,14 @@ class EventForm extends Component {
     this.setState((prev) => {
       let notifications = prev.notifications.concat(n);
       return { notifications: notifications };
+    });
+  }
+
+  removeNotification(n) {
+    let rm = (notifications) => notifications.filter(
+      e => e.time !== n.time || e.dayOffset !== n.dayOffset);
+    this.setState((prev) => {
+      return { notifications: rm(prev.notifications) }
     });
   }
 
@@ -198,14 +198,6 @@ class EventForm extends Component {
         recurrenceEndDate: recurrenceEndDate,
         repetitions: repetitions,
       };
-    });
-  }
-
-  removeNotification(n) {
-    let rm = (notifications) => notifications.filter(
-      e => e.time !== n.time || e.dayOffset !== n.dayOffset);
-    this.setState((prev) => {
-      return { notifications: rm(prev.notifications) }
     });
   }
 
@@ -323,28 +315,6 @@ class EventForm extends Component {
                   />
                 </label>
             );
-
-          }
-        )
-      }
-      </div>
-    );
-
-    let notifications = (
-      <div id="notificationsList">
-      {
-        this.state.notifications.map(
-          (n) => {
-            let days = {
-              "-1" : "the day before the event",
-              "0" : "the day of the event"
-            };
-            return (
-              <div key={n.time+n.dayOffset}>
-                {n.time + " on " + days[n.dayOffset]}
-                <button onClick={this.removeNotification.bind(this, n)}>Remove</button>
-              </div>
-            )
           }
         )
       }
@@ -468,26 +438,11 @@ class EventForm extends Component {
           <legend>Groups</legend>
           {groups}
         </fieldset>
-        <fieldset>
-          <legend>Notifications</legend>
-          {notifications}
-          Add notification at
-          <input
-            type="time"
-            id="notificationTime"
-            value={this.state.notificationTime}
-            onChange={this.handleInputChange}
-          /> on
-          <select
-            id="notificationDay"
-            value={this.notificationDay}
-            onChange={this.handleInputChange}
-          >
-            <option value="-1">the day before the event</option>
-            <option value="0">the day of the event</option>
-          </select>
-          <button onClick={this.handleAddNotification}>Add notification</button>
-        </fieldset>
+        <NotificationSelector
+          notifications={this.state.notifications}
+          addNotification={this.handleAddNotification.bind(this)}
+          removeNotification={this.removeNotification.bind(this)}
+        />
         <fieldset>
           <legend>Event repetitions</legend>
           <select
