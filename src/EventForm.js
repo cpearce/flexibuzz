@@ -1,55 +1,7 @@
 import React, { Component } from 'react';
 import SortMaybeAsInt from './Util.js'
-import {NotificationSelector} from './NotificationSelector.js'
-
-// Pads a number with "0" so it's 2 digits long.
-let fw = (x) => (x +  "").padStart(2, "0");
-
-function today() {
-  let d = new Date();
-  return d.getFullYear() + "-" + fw(d.getMonth() + 1) + "-" + fw(d.getDate());
-}
-
-function addDays(date, days) {
-  var result = new Date(date);
-  result.setDate(result.getDate() + days);
-  return result;
-}
-
-function repetitionsForRange(period, startDate, endDate) {
-  if (period === 0) {
-    return [];
-  }
-  let dates = [];
-  const end = new Date(endDate);
-  for (let date = new Date(startDate);
-       date <= end;
-       date = addDays(date, 7 * period))
-  {
-    dates.push(date);
-  }
-  return dates;
-}
-
-function makeDate(date, time, allDay) {
-  return date + " " + (allDay ? "00:00:00" : time);
-}
-
-function makeShortDateTime(d) {
-  return makeShortDate(d) + " " + makeShortTime(d);
-}
-
-function makeShortTime(d) {
-  return fw(d.getHours()) + ":" + fw(d.getMinutes()) + ":" + fw(d.getSeconds());
-}
-
-function makeShortDate(d) {
-  return d.getFullYear() + "-" + fw(d.getMonth() + 1) + "-" + fw(d.getDate());
-}
-
-function daysBetween(a, b) {
-  return Math.round((a.getTime() - b.getTime()) / 8.64e7);
-}
+import {NotificationSelector, NotificationList} from './NotificationSelector.js'
+import {makeDate, makeShortDateTime, makeShortDate, repetitionsForRange, today} from './DateUtils.js'
 
 class EventForm extends Component {
   constructor(props) {
@@ -61,29 +13,6 @@ class EventForm extends Component {
     );
 
     const dupe = this.props.duplicatee;
-
-    let timeOf = (s) => {
-      if (!s) {
-        return "";
-      }
-      let r = /(\d\d:\d\d):\d\d/;
-      let m = s.match(r);
-      if (m.length < 2) {
-        return s;
-      }
-      return m[1];
-    };
-
-    let notifications = (dupe && dupe.notifications) ?
-      dupe.notifications.map((n) => {
-        return {
-          time: timeOf(n.toTimeString()),
-          dayOffset: daysBetween(new Date(n), new Date(dupe.startDate)),
-        }
-      }).filter(
-        x => x.dayOffset === 0 || x.dayOffset === -1
-      )
-    : [];
 
     let selectedBoxes = (dupe && dupe.boxes)
       ? new Set(dupe.boxIds) : new Set();
@@ -97,7 +26,7 @@ class EventForm extends Component {
       location: dupe ? dupe.location : '',
       address: dupe ? dupe.address : '',
       selectedBoxes: selectedBoxes,
-      notifications: notifications,
+      notifications: new NotificationList(dupe),
       notificationTime: "09:00",
       notificationDay: -1,
       recurrencePeriod: 0,
@@ -154,22 +83,14 @@ class EventForm extends Component {
   }
 
   handleAddNotification(n) {
-    let found = this.state.notifications.find(
-      e => e.time === n.time && e.dayOffset === n.dayOffset);
-    if (found) {
-      return;
-    }
     this.setState((prev) => {
-      let notifications = prev.notifications.concat(n);
-      return { notifications: notifications };
+      return { notifications: prev.notifications.append(n) };
     });
   }
 
   removeNotification(n) {
-    let rm = (notifications) => notifications.filter(
-      e => e.time !== n.time || e.dayOffset !== n.dayOffset);
     this.setState((prev) => {
-      return { notifications: rm(prev.notifications) }
+      return { notifications: prev.notifications.without(n) };
     });
   }
 
@@ -213,13 +134,7 @@ class EventForm extends Component {
     let events = repetitions.map(
       (date) => {
         let shortDate = makeShortDate(date);
-        let notifications = this.state.notifications.map(
-          (n) => {
-            let d = makeShortDate(addDays(new Date(date), n.dayOffset));
-            return makeDate(d, n.time + ":00", false);
-          }
-        );
-
+        let notifications = this.state.notifications.forDay(date);
         let event = {
           boxes: Array.from(this.state.selectedBoxes.values()),
           post_type: "calendar",
@@ -240,7 +155,7 @@ class EventForm extends Component {
         if (this.state.address.length > 0) {
           event["address"] = this.state.address;
         }
-        if (this.state.notifications.length > 0) {
+        if (notifications.length > 0) {
           event["notifications[]"] = notifications;
         }
         return event;
