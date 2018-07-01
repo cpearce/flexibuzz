@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {NotificationSelector, NotificationList} from './NotificationSelector.js'
 
 async function getGCal(calendarId, startDate, endDate) {
   console.log("getGCal " + startDate + " " + endDate);
@@ -45,6 +46,7 @@ export class GoogleCalendarImport extends Component {
       startDate: "",
       endDate: "",
       selectedItems: new Set(),
+      notifications: new NotificationList(),
     };
   }
 
@@ -150,6 +152,18 @@ export class GoogleCalendarImport extends Component {
     })
   }
 
+  handleAddNotification(n) {
+    this.setState((prev) => {
+      return { notifications: prev.notifications.append(n) };
+    });
+  }
+
+  removeNotification(n) {
+    this.setState((prev) => {
+      return { notifications: prev.notifications.without(n) };
+    });
+  }
+
   renderLoadingScreen() {
     if (this.state.items.length === 0) {
       return (
@@ -190,6 +204,11 @@ export class GoogleCalendarImport extends Component {
             {items}
           </tbody>
         </table>
+        <NotificationSelector
+          notifications={this.state.notifications}
+          addNotification={this.handleAddNotification.bind(this)}
+          removeNotification={this.removeNotification.bind(this)}
+        />
         <button onClick={this.props.onCancel.bind(this)}>
           Cancel
         </button>
