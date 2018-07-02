@@ -157,6 +157,8 @@ class App extends Component {
       case ImportGoogleCalendarScreen: {
         return (
           <GoogleCalendarImport
+            boxes={this.state.boxes}
+            groups={this.props.tiqbiz.groups}
             onCancel={this.setScreen.bind(this, CalendarScreen)}
           />
         );

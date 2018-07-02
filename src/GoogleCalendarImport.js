@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {NotificationSelector, NotificationList} from './NotificationSelector.js'
+import {SelectedBoxList, BoxAndGroupSelector} from './SelectedBoxList.js'
 
 async function getGCal(calendarId, startDate, endDate) {
   console.log("getGCal " + startDate + " " + endDate);
@@ -47,6 +48,8 @@ export class GoogleCalendarImport extends Component {
       endDate: "",
       selectedItems: new Set(),
       notifications: new NotificationList(),
+      selectedBoxes: new SelectedBoxList(this.props.boxes,
+                                         this.props.groups),
     };
   }
 
@@ -164,6 +167,38 @@ export class GoogleCalendarImport extends Component {
     });
   }
 
+  handleBoxAdded(boxId) {
+    this.setState((prev) => {
+      prev.selectedBoxes.add(boxId);
+      return { selectedBoxes: prev.selectedBoxes };
+    });
+  }
+
+  handleBoxRemoved(boxId) {
+    this.setState((prev) => {
+      prev.selectedBoxes.remove(boxId);
+      return { selectedBoxes: prev.selectedBoxes };
+    });
+  }
+
+  handleGroupAdded(groupName) {
+    this.setState((prev) => {
+      prev.selectedBoxes.addGroup(groupName);
+      return {
+        selectedBoxes: prev.selectedBoxes,
+      };
+    });
+  }
+
+  handleGroupRemoved(groupName) {
+    this.setState((prev) => {
+      prev.selectedBoxes.removeGroup(groupName);
+      return {
+        selectedBoxes: prev.selectedBoxes,
+      };
+    });
+  }
+
   renderLoadingScreen() {
     if (this.state.items.length === 0) {
       return (
@@ -208,6 +243,15 @@ export class GoogleCalendarImport extends Component {
           notifications={this.state.notifications}
           addNotification={this.handleAddNotification.bind(this)}
           removeNotification={this.removeNotification.bind(this)}
+        />
+        <BoxAndGroupSelector
+          boxes={this.props.boxes}
+          groups={this.props.groups}
+          selectedBoxes={this.state.selectedBoxes}
+          onGroupAdded={this.handleGroupAdded.bind(this)}
+          onGroupRemoved={this.handleGroupRemoved.bind(this)}
+          onBoxAdded={this.handleBoxAdded.bind(this)}
+          onBoxRemoved={this.handleBoxRemoved.bind(this)}
         />
         <button onClick={this.props.onCancel.bind(this)}>
           Cancel
