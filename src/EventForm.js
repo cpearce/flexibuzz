@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {NotificationSelector, NotificationList} from './NotificationSelector.js'
 import {makeDate, makeShortDateTime, makeShortDate, repetitionsForRange, today} from './DateUtils.js'
-import {SelectedBoxList, GroupSelector} from './SelectedBoxList.js'
+import {SelectedBoxList, BoxAndGroupSelector} from './SelectedBoxList.js'
 
 class EventForm extends Component {
   constructor(props) {
@@ -49,14 +49,16 @@ class EventForm extends Component {
     });
   }
 
-  handleBoxCheckChange(boxId, event) {
-    let checked = event.target.checked;
+  handleBoxAdded(boxId) {
     this.setState((prev) => {
-      if (checked) {
-        prev.selectedBoxes.add(boxId);
-      } else {
-        prev.selectedBoxes.remove(boxId);
-      }
+      prev.selectedBoxes.add(boxId);
+      return { selectedBoxes: prev.selectedBoxes };
+    });
+  }
+
+  handleBoxRemoved(boxId) {
+    this.setState((prev) => {
+      prev.selectedBoxes.remove(boxId);
       return { selectedBoxes: prev.selectedBoxes };
     });
   }
@@ -175,28 +177,6 @@ class EventForm extends Component {
   }
 
   render() {
-    let boxes = (
-      <div id="box-list">
-      {
-        this.props.boxes.map(
-          (box) => {
-            var id = "box-list-" + box.id;
-            return (
-                <label key={id}>
-                  {box.name}
-                  <input type="checkbox"
-                        id={id}
-                        checked={this.state.selectedBoxes.has(box.id)}
-                        boxid={box.id}
-                        onChange={this.handleBoxCheckChange.bind(this, box.id)}
-                  />
-                </label>
-            );
-          }
-        )
-      }
-      </div>
-    );
 
     let repetitions = (
       <div id="recurrence-event-repetitions">
@@ -306,16 +286,15 @@ class EventForm extends Component {
             value={this.state.address}
             onChange={this.handleInputChange}
           />
-          </div>
-        <fieldset>
-          <legend>Boxes</legend>
-          {boxes}
-        </fieldset>
-        <GroupSelector
+        </div>
+        <BoxAndGroupSelector
+          boxes={this.props.boxes}
           groups={this.props.groups}
           selectedBoxes={this.state.selectedBoxes}
           onGroupAdded={this.handleGroupAdded.bind(this)}
           onGroupRemoved={this.handleGroupRemoved.bind(this)}
+          onBoxAdded={this.handleBoxAdded.bind(this)}
+          onBoxRemoved={this.handleBoxRemoved.bind(this)}
         />
         <NotificationSelector
           notifications={this.state.notifications}

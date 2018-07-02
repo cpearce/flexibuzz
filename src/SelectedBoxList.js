@@ -62,20 +62,48 @@ export class SelectedBoxList {
   }
 }
 
-export class GroupSelector extends Component {
+export class BoxAndGroupSelector extends Component {
 
   handleGroupCheckChange(groupName, event) {
-    console.log("handleGroupCheckChange");
-    console.log(groupName);
-    console.log(event);
     if (event.target.checked) {
-      this.props.onGroupAdded(groupName)
+      this.props.onGroupAdded(groupName);
     } else {
-      this.props.onGroupRemoved(groupName)
+      this.props.onGroupRemoved(groupName);
+    }
+  }
+
+  handleBoxCheckChange(boxId, event) {
+    if (event.target.checked) {
+      this.props.onBoxAdded(boxId);
+    } else {
+      this.props.onBoxRemoved(boxId);
     }
   }
 
   render() {
+    let boxes = (
+      <div id="box-list">
+      {
+        this.props.boxes.map(
+          (box) => {
+            var id = "box-list-" + box.id;
+            return (
+                <label key={id}>
+                  {box.name}
+                  <input type="checkbox"
+                        id={id}
+                        checked={this.props.selectedBoxes.has(box.id)}
+                        boxid={box.id}
+                        onChange={this.handleBoxCheckChange.bind(this, box.id)}
+                  />
+                </label>
+            );
+          }
+        )
+      }
+      </div>
+    );
+
     let selectedGroups = this.props.selectedBoxes.selectedGroups();
     let groupNames = Object.keys(this.props.groups);
     SortMaybeAsInt(groupNames);
@@ -102,10 +130,16 @@ export class GroupSelector extends Component {
       </div>
     );
     return (
-      <fieldset>
-        <legend>Groups</legend>
-        {groups}
-      </fieldset>
+      <div>
+        <fieldset>
+          <legend>Boxes</legend>
+          {boxes}
+        </fieldset>
+        <fieldset>
+          <legend>Groups</legend>
+          {groups}
+        </fieldset>
+      </div>
     );
   }
 
