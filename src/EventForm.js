@@ -2,20 +2,14 @@ import React, { Component } from 'react';
 import SortMaybeAsInt from './Util.js'
 import {NotificationSelector, NotificationList} from './NotificationSelector.js'
 import {makeDate, makeShortDateTime, makeShortDate, repetitionsForRange, today} from './DateUtils.js'
+import {SelectedBoxList} from './SelectedBoxList.js'
 
 class EventForm extends Component {
   constructor(props) {
     super(props);
 
-    // Cache lookup table of box name to box id.
-    this.boxNameToId = new Map(
-      this.props.boxes.map(b => [b.name, b.id])
-    );
-
     const dupe = this.props.duplicatee;
 
-    let selectedBoxes = (dupe && dupe.boxes)
-      ? new Set(dupe.boxIds) : new Set();
     this.state = {
       title: dupe ? dupe.title : '',
       description: dupe ? dupe.description : '',
@@ -25,7 +19,9 @@ class EventForm extends Component {
       endTime: dupe ? dupe.endTime : '',
       location: dupe ? dupe.location : '',
       address: dupe ? dupe.address : '',
-      selectedBoxes: selectedBoxes,
+      selectedBoxes: new SelectedBoxList(this.props.boxes,
+                                         this.props.groups,
+                                         dupe ? dupe.boxIds : undefined),
       notifications: new NotificationList(dupe),
       notificationTime: "09:00",
       notificationDay: -1,
@@ -60,23 +56,19 @@ class EventForm extends Component {
       if (checked) {
         prev.selectedBoxes.add(boxId);
       } else {
-        prev.selectedBoxes.delete(boxId);
+        prev.selectedBoxes.remove(boxId);
       }
       return { selectedBoxes: prev.selectedBoxes };
     });
   }
 
   handleGroupCheckChange(groupName, event) {
-    let boxNamesInGroup = this.props.groups[groupName];
     let checked = event.target.checked;
     this.setState((prev) => {
-      for (let boxName of boxNamesInGroup) {
-        let boxId = this.boxNameToId.get(boxName);
-        if (checked) {
-          prev.selectedBoxes.add(boxId);
-        } else {
-          prev.selectedBoxes.delete(boxId);
-        }
+      if (checked) {
+        prev.selectedBoxes.addGroup(groupName);
+      } else {
+        prev.selectedBoxes.removeGroup(groupName);
       }
       return { selectedBoxes: prev.selectedBoxes };
     });
@@ -136,7 +128,7 @@ class EventForm extends Component {
         let shortDate = makeShortDate(date);
         let notifications = this.state.notifications.forDay(date);
         let event = {
-          boxes: Array.from(this.state.selectedBoxes.values()),
+          boxes: this.state.selectedBoxes.values(),
           post_type: "calendar",
           title: this.state.title,
           body_markdown: this.state.description,
@@ -201,15 +193,7 @@ class EventForm extends Component {
       </div>
     );
 
-    // Get list of selected groups by looking over all selected boxes and seeing
-    // which groups' boxes are all selected.
-    let selectedGroups = new Set(Object.keys(this.props.groups).filter(
-      (groupName) => {
-        return Array.from(this.props.groups[groupName]).every(
-          (boxName) => this.state.selectedBoxes.has(this.boxNameToId.get(boxName))
-        );
-      }
-    ));
+    let selectedGroups = this.state.selectedBoxes.selectedGroups();
 
     let groupNames = Object.keys(this.props.groups);
     SortMaybeAsInt(groupNames);
