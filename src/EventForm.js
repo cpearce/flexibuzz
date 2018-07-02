@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import SortMaybeAsInt from './Util.js'
 import {NotificationSelector, NotificationList} from './NotificationSelector.js'
 import {makeDate, makeShortDateTime, makeShortDate, repetitionsForRange, today} from './DateUtils.js'
-import {SelectedBoxList} from './SelectedBoxList.js'
+import {SelectedBoxList, GroupSelector} from './SelectedBoxList.js'
 
 class EventForm extends Component {
   constructor(props) {
@@ -62,15 +61,21 @@ class EventForm extends Component {
     });
   }
 
-  handleGroupCheckChange(groupName, event) {
-    let checked = event.target.checked;
+  handleGroupAdded(groupName) {
     this.setState((prev) => {
-      if (checked) {
-        prev.selectedBoxes.addGroup(groupName);
-      } else {
-        prev.selectedBoxes.removeGroup(groupName);
-      }
-      return { selectedBoxes: prev.selectedBoxes };
+      prev.selectedBoxes.addGroup(groupName);
+      return {
+        selectedBoxes: prev.selectedBoxes,
+      };
+    });
+  }
+
+  handleGroupRemoved(groupName) {
+    this.setState((prev) => {
+      prev.selectedBoxes.removeGroup(groupName);
+      return {
+        selectedBoxes: prev.selectedBoxes,
+      };
     });
   }
 
@@ -193,33 +198,6 @@ class EventForm extends Component {
       </div>
     );
 
-    let selectedGroups = this.state.selectedBoxes.selectedGroups();
-
-    let groupNames = Object.keys(this.props.groups);
-    SortMaybeAsInt(groupNames);
-    let groups = (
-      <div id="group-list">
-      {
-        this.props.groups &&
-        groupNames.map(
-          (groupName) => {
-            var id = "group-list-" + groupName;
-            return (
-                <label key={id}>
-                  {groupName}
-                  <input type="checkbox"
-                        id={id}
-                        checked={selectedGroups.has(groupName)}
-                        onChange={this.handleGroupCheckChange.bind(this, groupName)}
-                  />
-                </label>
-            );
-          }
-        )
-      }
-      </div>
-    );
-
     let repetitions = (
       <div id="recurrence-event-repetitions">
       {
@@ -333,10 +311,12 @@ class EventForm extends Component {
           <legend>Boxes</legend>
           {boxes}
         </fieldset>
-        <fieldset>
-          <legend>Groups</legend>
-          {groups}
-        </fieldset>
+        <GroupSelector
+          groups={this.props.groups}
+          selectedBoxes={this.state.selectedBoxes}
+          onGroupAdded={this.handleGroupAdded.bind(this)}
+          onGroupRemoved={this.handleGroupRemoved.bind(this)}
+        />
         <NotificationSelector
           notifications={this.state.notifications}
           addNotification={this.handleAddNotification.bind(this)}

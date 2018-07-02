@@ -1,3 +1,6 @@
+import React, { Component } from 'react';
+import SortMaybeAsInt from './Util.js'
+
 export class SelectedBoxList {
 
   constructor(boxes, groups, boxIds) {
@@ -57,4 +60,53 @@ export class SelectedBoxList {
       func(this.boxNameToId.get(boxName));
     }
   }
+}
+
+export class GroupSelector extends Component {
+
+  handleGroupCheckChange(groupName, event) {
+    console.log("handleGroupCheckChange");
+    console.log(groupName);
+    console.log(event);
+    if (event.target.checked) {
+      this.props.onGroupAdded(groupName)
+    } else {
+      this.props.onGroupRemoved(groupName)
+    }
+  }
+
+  render() {
+    let selectedGroups = this.props.selectedBoxes.selectedGroups();
+    let groupNames = Object.keys(this.props.groups);
+    SortMaybeAsInt(groupNames);
+    let groups = (
+      <div id="group-list">
+      {
+        this.props.groups &&
+        groupNames.map(
+          (groupName) => {
+            var id = "group-list-" + groupName;
+            return (
+                <label key={id}>
+                  {groupName}
+                  <input type="checkbox"
+                        id={id}
+                        checked={selectedGroups.has(groupName)}
+                        onChange={this.handleGroupCheckChange.bind(this, groupName)}
+                  />
+                </label>
+            );
+          }
+        )
+      }
+      </div>
+    );
+    return (
+      <fieldset>
+        <legend>Groups</legend>
+        {groups}
+      </fieldset>
+    );
+  }
+
 }
