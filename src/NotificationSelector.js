@@ -48,7 +48,7 @@ export class NotificationList {
     return list;
   }
 
-  withou(n) {
+  without(n) {
     let list = new NotificationList();
     list.notifications = this.notifications.filter(
       e => e.time !== n.time || e.dayOffset !== n.dayOffset);
