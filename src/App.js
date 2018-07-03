@@ -180,11 +180,20 @@ class App extends Component {
     if (!this.state.authenticated) {
       return (
         <div className="App">
+          <div id="login-title">
+            Flexibuzz Notification Scheduler
+          </div>
           <LoginBox
             login={this.login}
             logout={this.logout}
             authenticated={this.state.authenticated}
           />
+          <div class="small">
+            <p>By <a href="http://pearce.org.nz">Chris Pearce</a></p>
+            <p>All implied warranties disclaimed.</p>
+            <p><a href="https://github.com/cpearce/flexibuzz/">Fork it on GitHub.</a></p>
+            <p>Icons by Gregor Cresnar from the Noun Project.</p>
+          </div>
         </div>
       );
     }

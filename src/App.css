@@ -131,6 +131,11 @@ button, input, select, textarea {
   padding: .2em;
 }
 
+#login-title {
+  font-size: 1.4em;
+  padding: .2em;
+}
+
 .duplicateButton {
   cursor: pointer;
 }
@@ -149,4 +154,8 @@ button, input, select, textarea {
   text-align: left;
   border: solid black 1px;
   padding: 0.5em;
+}
+
+.small {
+  font-size: .7em;
 }
