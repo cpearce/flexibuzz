@@ -8,16 +8,28 @@ class EventForm extends Component {
     super(props);
 
     const dupe = this.props.duplicatee;
+    const eventState = dupe ? {
+      title: dupe.title,
+      description: dupe.description,
+      allDay: dupe.allDay,
+      startDate: dupe.startDate,
+      startTime: dupe.startTime,
+      endTime: dupe.endTime,
+      location: dupe.location,
+      address: dupe.address,
+    } : {
+      title: '',
+      description: '',
+      allDay: true,
+      startDate: today(),
+      startTime: '09:00',
+      endTime: '',
+      location: '',
+      address: '',
+    };
 
     this.state = {
-      title: dupe ? dupe.title : '',
-      description: dupe ? dupe.description : '',
-      allDay: dupe ? dupe.allDay : true,
-      startDate: dupe ? dupe.startDate : today(),
-      startTime: dupe ? dupe.startTime : '09:00',
-      endTime: dupe ? dupe.endTime : '',
-      location: dupe ? dupe.location : '',
-      address: dupe ? dupe.address : '',
+      ...eventState,
       selectedBoxes: new SelectedBoxList(this.props.boxes,
                                          this.props.groups,
                                          dupe ? dupe.boxIds : undefined),
