@@ -42,3 +42,7 @@ function makeShortTime(d) {
 export function makeShortDate(d) {
   return d.getFullYear() + "-" + fw(d.getMonth() + 1) + "-" + fw(d.getDate());
 }
+
+export function daysBetween(a, b) {
+  return Math.round((a.getTime() - b.getTime()) / 8.64e7);
+}

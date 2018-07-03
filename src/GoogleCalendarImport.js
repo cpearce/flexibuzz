@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {NotificationSelector, NotificationList} from './NotificationSelector.js'
 import {SelectedBoxList, BoxAndGroupSelector} from './SelectedBoxList.js'
+import {addDays, daysBetween, makeShortDate} from './DateUtils.js'
 
 async function getGCal(calendarId, startDate, endDate) {
   console.log("getGCal " + startDate + " " + endDate);
@@ -210,6 +211,15 @@ export class GoogleCalendarImport extends Component {
         </div>
       );
     }
+
+    let dates = (start, end) => {
+      if (daysBetween(new Date(end), new Date(start)) == 1) {
+        return start;
+      }
+      end = makeShortDate(addDays(end, -1));
+      return start + " - " + end;
+    };
+
     let items = this.state.items.map((item) => {
       return (
         <tr key={item.id} className="gcal-item">
@@ -220,7 +230,10 @@ export class GoogleCalendarImport extends Component {
             />
           </td>
           <td>
-            {item.start.date} - {item.end.date} ; {item.summary}
+            {item.summary}
+          </td>
+          <td>
+            {dates(item.start.date, item.end.date)}
           </td>
         </tr>
       );
@@ -232,7 +245,8 @@ export class GoogleCalendarImport extends Component {
           <thead>
             <tr>
               <td>Import</td>
-              <td>Item</td>
+              <td>Title</td>
+              <td>Date</td>
             </tr>
           </thead>
           <tbody>
