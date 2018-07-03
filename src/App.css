@@ -139,7 +139,14 @@ button, input, select, textarea {
   background-color: royalblue;
 }
 
-
 .gcal-item {
   text-align: left;
+}
+
+#gcal-import-list {
+  width: 600px;
+  margin: auto;
+  text-align: left;
+  border: solid black 1px;
+  padding: 0.5em;
 }

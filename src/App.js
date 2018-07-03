@@ -160,6 +160,7 @@ class App extends Component {
             boxes={this.state.boxes}
             groups={this.props.tiqbiz.groups}
             onCancel={this.setScreen.bind(this, CalendarScreen)}
+            onSubmit={this.onAddEvents}
           />
         );
       }

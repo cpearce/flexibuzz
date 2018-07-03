@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {NotificationSelector, NotificationList} from './NotificationSelector.js'
 import {SelectedBoxList, BoxAndGroupSelector} from './SelectedBoxList.js'
-import {addDays, daysBetween, makeShortDate} from './DateUtils.js'
+import {addDays, daysBetween, makeDate, makeShortDate, makeShortDateTime} from './DateUtils.js'
 
 async function getGCal(calendarId, startDate, endDate) {
   console.log("getGCal " + startDate + " " + endDate);
@@ -200,6 +200,26 @@ export class GoogleCalendarImport extends Component {
     });
   }
 
+  importEvents(event) {
+    let items = this.state.items.filter((i) => {
+      return this.state.selectedItems.has(i.id);
+    })
+    .map((i) => {
+      return {
+        boxes: this.state.selectedBoxes.values(),
+        post_type: "calendar",
+        title: i.summary,
+        body_markdown: "",
+        start_date: makeDate(i.start.date, null, true),
+        end_date: makeDate(makeShortDate(addDays(i.end.date, -1)), null, true),
+        all_day: true,
+        published_at: makeShortDateTime(new Date()),
+        "notifications[]": this.state.notifications.forDay(i.start.date),
+      }
+    });
+    this.props.onSubmit(items);
+  }
+
   renderLoadingScreen() {
     if (this.state.items.length === 0) {
       return (
@@ -213,7 +233,7 @@ export class GoogleCalendarImport extends Component {
     }
 
     let dates = (start, end) => {
-      if (daysBetween(new Date(end), new Date(start)) == 1) {
+      if (daysBetween(new Date(end), new Date(start)) === 1) {
         return start;
       }
       end = makeShortDate(addDays(end, -1));
@@ -240,7 +260,7 @@ export class GoogleCalendarImport extends Component {
     });
 
     return (
-      <div>
+      <div id="gcal-import-list">
         <table>
           <thead>
             <tr>
@@ -253,6 +273,8 @@ export class GoogleCalendarImport extends Component {
             {items}
           </tbody>
         </table>
+        <hr/>
+        Set default values for events to be imported...
         <NotificationSelector
           notifications={this.state.notifications}
           addNotification={this.handleAddNotification.bind(this)}
@@ -267,6 +289,9 @@ export class GoogleCalendarImport extends Component {
           onBoxAdded={this.handleBoxAdded.bind(this)}
           onBoxRemoved={this.handleBoxRemoved.bind(this)}
         />
+        <button onClick={this.importEvents.bind(this)}>
+          Import Events
+        </button>
         <button onClick={this.props.onCancel.bind(this)}>
           Cancel
         </button>
