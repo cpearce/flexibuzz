@@ -193,6 +193,8 @@ class App extends Component {
             <p>All implied warranties disclaimed.</p>
             <p><a href="https://github.com/cpearce/flexibuzz/">Fork it on GitHub.</a></p>
             <p>Icons by Gregor Cresnar from the Noun Project.</p>
+            <p>Favicon by <a href="http://www.iconarchive.com/artist/dakirby309.html">dAKirby309</a>,
+            licensed under <a href="http://creativecommons.org/licenses/by-nc/4.0/">CC Attribution-Noncommercial 4.0</a>.</p>
           </div>
         </div>
       );
